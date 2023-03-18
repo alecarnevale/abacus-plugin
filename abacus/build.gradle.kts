@@ -13,6 +13,7 @@ dependencies {
 
     implementation("xyz.ronella.gradle.plugin:simple-git:2.0.1")
     implementation("space.kscience:plotlykt-core:0.5.0")
+    implementation("com.github.javaparser:javaparser-symbol-solver-core:3.25.1")
 }
 
 kotlin {

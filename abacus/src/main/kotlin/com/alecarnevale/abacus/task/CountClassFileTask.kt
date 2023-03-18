@@ -1,5 +1,8 @@
 package com.alecarnevale.abacus.task
 
+import com.github.javaparser.StaticJavaParser
+import com.github.javaparser.ast.CompilationUnit
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration
 import kotlinx.ast.common.AstResult
 import kotlinx.ast.common.AstSource
 import kotlinx.ast.common.ast.Ast
@@ -21,10 +24,17 @@ abstract class CountClassFileTask : CountFileTask() {
   override val taskType: TaskType
     get() = TaskType.CLASS
 
+  private lateinit var supertypesValues: List<String>
+
   @TaskAction
   fun countClassFile() {
-    val supertypesValues = supertypes.orNull ?: emptyList()
+    supertypesValues = supertypes.orNull ?: emptyList()
     project.logger.log(LogLevel.LIFECYCLE, "Start counting files with supertypes: $supertypesValues")
+    val cnt = countKotlinFiles() + countJavaFiles()
+    printOutput(cnt)
+  }
+
+  private fun countKotlinFiles(): Int {
     var cnt = 0
     project.projectDir.walk()
       // TODO find a better way to use only source directory and no build folders
@@ -40,7 +50,32 @@ abstract class CountClassFileTask : CountFileTask() {
           }
         }
       }
+    return cnt
+  }
 
-    printOutput(cnt)
+  private fun countJavaFiles(): Int {
+    var cnt = 0
+    project.projectDir.walk()
+      // TODO find a better way to use only source directory and no build folders
+      .filter { it.isFile && it.extension == "java" && !it.path.contains("build/") }
+      .forEach { file ->
+        val compilationUnit: CompilationUnit = StaticJavaParser.parse(file)
+        val declarations: MutableList<ClassOrInterfaceDeclaration> =
+          compilationUnit.findAll(ClassOrInterfaceDeclaration::class.java)
+        val implementsAny = declarations.any {
+          it.implementedTypes.any {
+            it.nameAsString in supertypesValues
+          }
+        }
+        val extendsAny = declarations.any {
+          it.extendedTypes.any {
+            it.nameAsString in supertypesValues
+          }
+        }
+        if (implementsAny || extendsAny) {
+          cnt++
+        }
+      }
+    return cnt
   }
 }
