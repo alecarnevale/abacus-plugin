@@ -24,7 +24,8 @@ abstract class CountExtensionFileTask : CountFileTask() {
         val parent = file.parentFile
         if (file.isFile && parent.isDirectory) {
           fileDescriptorsValues.firstOrNull {
-            file.extension == it.first && parent.name == it.second
+            // TODO find a better way to use only source directory and no build folders
+            file.extension == it.first && parent.name == it.second && !file.path.contains("build/")
           } != null
         } else false
       }

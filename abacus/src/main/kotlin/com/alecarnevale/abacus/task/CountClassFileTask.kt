@@ -27,7 +27,8 @@ abstract class CountClassFileTask : CountFileTask() {
     project.logger.log(LogLevel.LIFECYCLE, "Start counting files with supertypes: $supertypesValues")
     var cnt = 0
     project.projectDir.walk()
-      .filter { it.isFile && it.extension == "kt" }
+      // TODO find a better way to use only source directory and no build folders
+      .filter { it.isFile && it.extension == "kt" && !it.path.contains("build/") }
       .forEach { file ->
         val source: AstSource.File = AstSource.File(file.path)
         val kotlinFile: Ast = KotlinGrammarAntlrKotlinParser.parseKotlinFile(source)
