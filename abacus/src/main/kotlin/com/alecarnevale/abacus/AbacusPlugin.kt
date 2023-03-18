@@ -13,6 +13,8 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
 import xyz.ronella.gradle.plugin.simple.git.task.GitCheckout
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
 
 private const val SIMPLE_GIT_PLUGIN_ID = "xyz.ronella.simple-git"
 private const val OUTPUT_FILE_PATH = "build/abacus/output.csv"
@@ -52,7 +54,13 @@ class AbacusPlugin : Plugin<Project> {
   private fun setupFiles() {
     countingOutputFile = File(OUTPUT_FILE_PATH)
     countingOutputFile.delete()
-    tagsFile = File(pluginExtension.tagsFilePath.get())
+    val tagsFilePath = pluginExtension.tagsFilePath.get()
+    val tagsParentDirPath = tagsFilePath.substringBeforeLast("/")
+    Files.createDirectories(Path.of(tagsParentDirPath))
+    if (!File(tagsFilePath).exists()) {
+      Files.createFile(Path.of(tagsFilePath))
+    }
+    tagsFile = File(tagsFilePath)
   }
 
   /**
