@@ -41,7 +41,7 @@ abstract class CountFileTask: DefaultTask() {
   }
 
   private fun File.printOutputInFile(cnt: Int, tag: String?) {
-    val msg = tag?.let { "$tag, ${taskType.typeDescriptor} $cnt" } ?: "${taskType.typeDescriptor}, $cnt"
+    val msg = tag?.let { "$tag, ${taskType.typeDescriptor}, $cnt" } ?: "${taskType.typeDescriptor}, $cnt"
     appendText(
       buildString {
         append(msg)

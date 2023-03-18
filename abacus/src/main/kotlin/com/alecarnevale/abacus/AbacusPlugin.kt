@@ -33,11 +33,10 @@ class AbacusPlugin : Plugin<Project> {
     val tasks = if (tags.isEmpty()) {
       project.singleCounting()
     } else {
-      project.multipleCounting(tags)
+      with(project) {
+        plotting(multipleCounting(tags))
+      }
     }
-
-    // TODO set file
-    project.tasks.create("abacusPlot", PlotTask::class.java)
 
     val abacusTask = project.tasks.create("abacus", AbacusTask::class.java)
     abacusTask.dependsOn(tasks)
@@ -138,6 +137,16 @@ class AbacusPlugin : Plugin<Project> {
     }
 
     return resultList
+  }
+
+  private fun Project.plotting(taskList: List<TaskProvider<out Task>>): List<TaskProvider<out Task>> {
+    project.tasks.create("abacusPlot", PlotTask::class.java)
+    val abacusPlot: TaskProvider<PlotTask> = project.tasks.named("abacusPlot", PlotTask::class.java)
+    abacusPlot.configure {
+      it.inputFile.set(countingOutputFile)
+    }
+    abacusPlot.get().setDependsOn(taskList)
+    return taskList.toMutableList().apply { add(abacusPlot) }
   }
 }
 
