@@ -12,6 +12,11 @@ dependencies {
     api("com.github.kotlinx:ast:0.1.0")
 
     implementation("xyz.ronella.gradle.plugin:simple-git:2.0.1")
+    implementation("space.kscience:plotlykt-core:0.5.0")
+}
+
+kotlin {
+    jvmToolchain(11)
 }
 
 group = "io.github.alecarnevale"

@@ -3,6 +3,7 @@ package com.alecarnevale.abacus
 import com.alecarnevale.abacus.model.AbacusPluginExtension
 import com.alecarnevale.abacus.task.CountClassFileTask
 import com.alecarnevale.abacus.task.CountExtensionFileTask
+import com.alecarnevale.abacus.task.PlotTask
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -34,6 +35,9 @@ class AbacusPlugin : Plugin<Project> {
     } else {
       project.multipleCounting(tags)
     }
+
+    // TODO set file
+    project.tasks.create("abacusPlot", PlotTask::class.java)
 
     val abacusTask = project.tasks.create("abacus", AbacusTask::class.java)
     abacusTask.dependsOn(tasks)

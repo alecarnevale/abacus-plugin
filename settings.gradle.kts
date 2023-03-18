@@ -10,6 +10,7 @@ dependencyResolutionManagement {
     mavenCentral()
     maven("https://plugins.gradle.org/m2/")
     maven("https://jitpack.io")
+    maven("https://repo.kotlin.link")
   }
 }
 
