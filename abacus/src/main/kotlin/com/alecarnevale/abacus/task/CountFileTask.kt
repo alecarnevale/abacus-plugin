@@ -9,14 +9,14 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
 import java.io.File
 
-enum class TaskType(typeDescriptor: String) {
+enum class TaskType(val typeDescriptor: String) {
   CLASS("cls"),
   EXTENSION("ext")
 }
 
 /**
  * If [tag] is provided, it will be used in the output info.
- * If [outputFile] is provided, output is printed into it. Otherwise it will be printed in console.
+ * If [outputFile] is provided, output is printed into it, otherwise it will be printed in console.
  */
 abstract class CountFileTask: DefaultTask() {
   @get:Input
@@ -41,7 +41,7 @@ abstract class CountFileTask: DefaultTask() {
   }
 
   private fun File.printOutputInFile(cnt: Int, tag: String?) {
-    val msg = tag?.let { "$tag, $cnt" } ?: cnt
+    val msg = tag?.let { "$tag, ${taskType.typeDescriptor} $cnt" } ?: "${taskType.typeDescriptor}, $cnt"
     appendText(
       buildString {
         append(msg)
