@@ -82,7 +82,8 @@ class AbacusPlugin : Plugin<Project> {
     }
 
     countExtensionFile.configure {
-      it.fileDescriptors.set(pluginExtension.fileDescriptors)
+      it.fileExtensions.set(pluginExtension.fileExtensions)
+      it.fileFolders.set(pluginExtension.fileFolders)
       it.outputFile.set(countingOutputFile)
     }
 
@@ -129,7 +130,8 @@ class AbacusPlugin : Plugin<Project> {
       }
 
       countExtensionFile.configure {
-        it.fileDescriptors.set(pluginExtension.fileDescriptors)
+        it.fileExtensions.set(pluginExtension.fileExtensions)
+        it.fileFolders.set(pluginExtension.fileFolders)
         it.tag.set(currentTag)
         it.outputFile.set(countingOutputFile)
       }

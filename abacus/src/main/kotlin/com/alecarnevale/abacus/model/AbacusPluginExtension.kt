@@ -11,10 +11,14 @@ interface AbacusPluginExtension {
   val supertypes: ListProperty<String>
 
   /**
-   * File to count in codebase.
+   * File extensions to count in codebase.
    */
-  val fileDescriptors: ListProperty<Pair<String, String>>
-  // TODO I'd like to change Pair for a custom Serializable data class, but it doesn't work
+  val fileExtensions: ListProperty<String>
+
+  /**
+   * For which folder count in codebase.
+   */
+  val fileFolders: ListProperty<String>
 
   /**
    * Path pointing the file containing the list of tags.
