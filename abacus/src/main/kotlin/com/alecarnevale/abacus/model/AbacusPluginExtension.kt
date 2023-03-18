@@ -17,7 +17,7 @@ interface AbacusPluginExtension {
   // TODO I'd like to change Pair for a custom Serializable data class, but it doesn't work
 
   /**
-   * Tag for which start counting.
+   * Path pointing the file containing the list of tags.
    */
-  val startingTag: Property<String>
+  val tagsFilePath: Property<String>
 }
