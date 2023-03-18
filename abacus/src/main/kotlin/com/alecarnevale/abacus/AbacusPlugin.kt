@@ -18,7 +18,7 @@ import java.nio.file.Path
 
 private const val SIMPLE_GIT_PLUGIN_ID = "xyz.ronella.simple-git"
 private const val OUTPUT_FILE_PATH = "build/abacus/output.csv"
-private const val DEFAULT_TAGS_FILE_PATH = "build/abacus/tags.txt"
+private const val DEFAULT_TAGS_FILE_PATH = "/abacus/tags.txt"
 internal const val ABACUS_PLUGIN_EXTENSION_NAME = "abacus"
 
 class AbacusPlugin : Plugin<Project> {
@@ -47,7 +47,8 @@ class AbacusPlugin : Plugin<Project> {
   private fun Project.setup() {
     project.pluginManager.apply(SIMPLE_GIT_PLUGIN_ID)
     pluginExtension = project.extensions.create(ABACUS_PLUGIN_EXTENSION_NAME, AbacusPluginExtension::class.java)
-    pluginExtension.tagsFilePath.convention(DEFAULT_TAGS_FILE_PATH)
+    val tagsFilePathDefault = project.buildDir.path + DEFAULT_TAGS_FILE_PATH
+    pluginExtension.tagsFilePath.convention(tagsFilePathDefault)
     setupFiles()
   }
 
