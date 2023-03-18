@@ -7,12 +7,15 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.LogLevel
+import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
 import java.io.File
 
 private const val SIMPLE_GIT_PLUGIN_ID = "xyz.ronella.simple-git"
 private const val OUTPUT_FILE_PATH = "build/abacus/output.csv"
+private const val GIT_TAG_ORDERING_ARGS = "--sort=v:refname"
+private const val TAGS_OUTPUT_PATH = "build/abacus/tags.txt"
 private val startingTagDefault: String? = null
 
 class AbacusPlugin : Plugin<Project> {
@@ -22,6 +25,8 @@ class AbacusPlugin : Plugin<Project> {
     extension.startingTag.convention(startingTagDefault)
     val outputFile = File(OUTPUT_FILE_PATH)
     outputFile.delete()
+    val tagsFile = File(TAGS_OUTPUT_PATH)
+    tagsFile.delete()
 
     project.tasks.create("countClassFile", CountClassFileTask::class.java)
     project.tasks.create("countExtensionFile", CountExtensionFileTask::class.java)
@@ -41,8 +46,20 @@ class AbacusPlugin : Plugin<Project> {
       it.outputFile.set(outputFile)
     }
 
+    // TODO this is weird
+    // simple git plugin was introduced to simplify the usage of git through a plugin,
+    // unfortunately it didn't find a solution for redirecting the output of gitTags into a file
+    // but I start write raw Exec command like this, adding a dependency like simple git become pointless
+    project.tasks.create("exec", Exec::class.java)
+    val gitTagTask: TaskProvider<Exec> = project.tasks.named("exec", Exec::class.java)
+    gitTagTask.configure {
+      it.executable = "git"
+      it.args = listOf("tag", GIT_TAG_ORDERING_ARGS)
+      it.standardOutput = tagsFile.outputStream()
+    }
+
     val abacusTask = project.tasks.create("abacus", AbacusTask::class.java)
-    abacusTask.dependsOn(countClassFile, countExtensionFile)
+    abacusTask.dependsOn(countClassFile, countExtensionFile, gitTagTask)
   }
 }
 
