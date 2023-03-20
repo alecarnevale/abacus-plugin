@@ -136,6 +136,9 @@ class AbacusPlugin : Plugin<Project> {
         it.outputFile.set(countingOutputFile)
       }
 
+      if (resultList.isNotEmpty()) {
+        gitCheckoutTag.get().dependsOn(resultList.last())
+      }
       countClassFile.get().dependsOn(gitCheckoutTag.get())
       countExtensionFile.get().dependsOn(countClassFile.get())
 
