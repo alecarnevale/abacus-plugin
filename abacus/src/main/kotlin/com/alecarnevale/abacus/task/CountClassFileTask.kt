@@ -29,6 +29,10 @@ abstract class CountClassFileTask : CountFileTask() {
   @TaskAction
   fun countClassFile() {
     supertypesValues = supertypes.orNull ?: emptyList()
+    if (supertypesValues.isEmpty()) {
+      return
+    }
+
     project.logger.log(LogLevel.LIFECYCLE, "Start counting files with supertypes: $supertypesValues")
     val cnt = countKotlinFiles() + countJavaFiles()
     printOutput(cnt)

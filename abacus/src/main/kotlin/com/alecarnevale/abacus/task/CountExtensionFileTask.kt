@@ -17,22 +17,30 @@ abstract class CountExtensionFileTask : CountFileTask() {
   @get:Input
   abstract val fileFolders: ListProperty<String>
 
+  private lateinit var fileExtensionsValues: List<String>
+  private lateinit var fileFoldersValues: List<String>
+
   override val taskType: TaskType
     get() = TaskType.EXTENSION
 
   @TaskAction
   fun countXmlFile() {
-    fileExtensions.orNull ?: emptyList()
+    fileExtensionsValues = fileExtensions.orNull ?: emptyList()
+    fileFoldersValues = fileFolders.orNull ?: emptyList()
+    if (fileExtensionsValues.isEmpty()) {
+      return
+    }
+
     project.logger.log(
       LogLevel.LIFECYCLE,
-      "Start counting files with extensions=$fileExtensions contained in folders=$fileFolders "
+      "Start counting files with extensions=$fileExtensionsValues contained in folders=$fileFoldersValues "
     )
     val cnt = project.projectDir.walk()
       .count { file ->
         val parent = file.parentFile
         // TODO find a better way to use only source directory and no build folders
         if (file.isFile && parent.isDirectory && !file.path.contains("build/")) {
-          file.extension in fileExtensions.get() && (fileFolders.get().isEmpty() || parent.name in fileFolders.get())
+          file.extension in fileExtensionsValues && (fileFoldersValues.isEmpty() || parent.name in fileFoldersValues)
         } else false
       }
     printOutput(cnt)
