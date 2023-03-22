@@ -1,6 +1,7 @@
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.8.0"
     id("com.gradle.plugin-publish") version "1.1.0"
+    signing
 }
 
 dependencies {
@@ -25,10 +26,14 @@ version = "1.0.0"
 
 gradlePlugin {
     plugins {
+        website.set("https://github.com/alecarnevale/abacus-plugin")
+        vcsUrl.set("https://github.com/alecarnevale/abacus-plugin.git")
         create("abacusPlugin") {
-            id = "com.alecarnevale.abacus"
+            id = "io.github.alecarnevale.abacus"
             displayName = "Abacus Plugin"
+            description = "Counts and plots the number of files by extension or by inheritance."
             implementationClass = "com.alecarnevale.abacus.AbacusPlugin"
+            tags.set(listOf("java", "kotlin", "analysis"))
         }
     }
 }
