@@ -140,8 +140,9 @@ class AbacusPlugin : Plugin<Project> {
         gitCheckoutTag.get().dependsOn(resultList.last())
       }
       countClassFile.get().dependsOn(gitCheckoutTag.get())
-      countExtensionFile.get().dependsOn(countClassFile.get())
+      countExtensionFile.get().dependsOn(gitCheckoutTag.get())
 
+      resultList.add(countClassFile)
       resultList.add(countExtensionFile)
     }
 
