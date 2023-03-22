@@ -26,6 +26,8 @@ abstract class CountClassFileTask : CountFileTask() {
 
   private lateinit var supertypesValues: List<String>
 
+  private var cntError = 0
+
   @TaskAction
   fun countClassFile() {
     supertypesValues = supertypes.orNull ?: emptyList()
@@ -35,6 +37,7 @@ abstract class CountClassFileTask : CountFileTask() {
 
     project.logger.log(LogLevel.LIFECYCLE, "Start counting files with supertypes: $supertypesValues")
     val cnt = countKotlinFiles() + countJavaFiles()
+    project.logger.log(LogLevel.WARN, "Error parsing $cntError files")
     printOutput(cnt)
   }
 
@@ -44,14 +47,18 @@ abstract class CountClassFileTask : CountFileTask() {
       // TODO find a better way to use only source directory and no build folders
       .filter { it.isFile && it.extension == "kt" && !it.path.contains("build/") }
       .forEach { file ->
-        val source: AstSource.File = AstSource.File(file.path)
-        val kotlinFile: Ast = KotlinGrammarAntlrKotlinParser.parseKotlinFile(source)
-        val summary: AstResult<Unit, List<Ast>> = kotlinFile.summary(false)
-        summary.onSuccess {
-          val klass = it.filterIsInstance<KlassDeclaration>().first()
-          if (klass.inheritance.firstOrNull()?.type?.identifier in supertypesValues) {
-            cnt += 1
+        try {
+          val source: AstSource.File = AstSource.File(file.path)
+          val kotlinFile: Ast = KotlinGrammarAntlrKotlinParser.parseKotlinFile(source)
+          val summary: AstResult<Unit, List<Ast>> = kotlinFile.summary(false)
+          summary.onSuccess {
+            val klass = it.filterIsInstance<KlassDeclaration>().first()
+            if (klass.inheritance.firstOrNull()?.type?.identifier in supertypesValues) {
+              cnt += 1
+            }
           }
+        } catch (ex: Exception) {
+          cntError += 1
         }
       }
     return cnt
@@ -63,21 +70,25 @@ abstract class CountClassFileTask : CountFileTask() {
       // TODO find a better way to use only source directory and no build folders
       .filter { it.isFile && it.extension == "java" && !it.path.contains("build/") }
       .forEach { file ->
-        val compilationUnit: CompilationUnit = StaticJavaParser.parse(file)
-        val declarations: MutableList<ClassOrInterfaceDeclaration> =
-          compilationUnit.findAll(ClassOrInterfaceDeclaration::class.java)
-        val implementsAny = declarations.any {
-          it.implementedTypes.any {
-            it.nameAsString in supertypesValues
+        try {
+          val compilationUnit: CompilationUnit = StaticJavaParser.parse(file)
+          val declarations: MutableList<ClassOrInterfaceDeclaration> =
+            compilationUnit.findAll(ClassOrInterfaceDeclaration::class.java)
+          val implementsAny = declarations.any {
+            it.implementedTypes.any {
+              it.nameAsString in supertypesValues
+            }
           }
-        }
-        val extendsAny = declarations.any {
-          it.extendedTypes.any {
-            it.nameAsString in supertypesValues
+          val extendsAny = declarations.any {
+            it.extendedTypes.any {
+              it.nameAsString in supertypesValues
+            }
           }
-        }
-        if (implementsAny || extendsAny) {
-          cnt++
+          if (implementsAny || extendsAny) {
+            cnt++
+          }
+        } catch (ex: Exception) {
+          cntError += 1
         }
       }
     return cnt
