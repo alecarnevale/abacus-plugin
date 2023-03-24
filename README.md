@@ -42,27 +42,21 @@ Note:
 - if more tags has been analyzed (`tags.txt` not empty) it also plots a graph and a table in `build/abacus/plot.html`.
 
 ## Installation
-At the moment abacus plugin is waiting for approval by gradle plugin portal.
+Abacus plugin is available in the [gradle plugin portal](https://plugins.gradle.org/plugin/io.github.alecarnevale.abacus).
 
-Meantime you can clone the repo and put it in a sibling folder. Just run `./gradlew publish` and it publishes the package in local maven repository.
-
-To set the local repository in the client project:
 ```
-[file: settings.gradle]
+[file: build.gradle.kts]
 
-pluginManagement {
-  repositories {
-    gradlePluginPortal()
-    maven(url = "../local-plugin-repository")
-  }
+plugins {
+  id("io.github.alecarnevale.abacus") version "1.0.0"
 }
 ```
 
 ### Dependencies
 - add https://jitpack.io maven repository;
-- add `"com.github.kotlinx:ast:0.1.0"` in classpath
+- add `com.github.kotlinx:ast:0.1.0` in the classpath
 ```
-[file: build.gradle]
+[file: build.gradle.kts]
 
 buildscript {
   repositories {
