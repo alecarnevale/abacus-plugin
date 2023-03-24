@@ -1,6 +1,6 @@
-# ABACUS PLUGIN DEMO
+# ABACUS PLUGIN
 
-A gradle plugint that provides tasks to count and plot the number of files, filtered by extension or by class/interface inheritance.
+A gradle plugin that provides tasks to count and plot the number of files, filtered by extension or by class/interface inheritance.
 
 ## Usage
 Take a look at the [demo project](https://github.com/alecarnevale/abacus-plugin-demo) for a sample.
@@ -73,3 +73,9 @@ buildscript {
   }
 }
 ```
+
+## Thanks to
+- kotlinx.ast https://github.com/kotlinx/ast
+- JavaParser https://github.com/javaparser/javaparser
+- Simple Git Gradle Plugin https://github.com/rcw3bb/simple-git
+- Plotly.kt https://github.com/SciProgCentre/plotly.kt
